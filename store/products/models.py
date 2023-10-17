@@ -15,6 +15,11 @@ class ProductCategory(models.Model):
     # текст. Чтобы показать, что данное поле является не обязательным для заполнения передаём в него два аргумента.
     description = models.TextField(null=True, blank=True)
 
+    # Используем магический метод str, чтобы при выводе в консоли или в терминале изменение у экземпляра класса можно
+    # было получить название.
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     name = models.CharField(max_length=256)
@@ -35,3 +40,7 @@ class Product(models.Model):
     # удалены все продукты принадлежащие данной категории. Если нужно использовать SET_DEFAULT, то в параметр default
     # нужно вписать любое значение, которое будет использоваться при удалении по умолчанию.
     category = models.ForeignKey(to=ProductCategory, on_delete=models.CASCADE)
+
+    # Чтобы поменять отображение продуктов в админ панели необходимо переопределить магический метод str.
+    def __str__(self):
+        return f'Продукт: {self.name} | Категория: {self.category.name}'

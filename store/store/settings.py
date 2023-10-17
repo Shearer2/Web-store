@@ -123,6 +123,11 @@ STATICFILES_DIRS = (
     BASE_DIR / 'static',
 )
 
+# Указываем url-адрес, по которому будут располагаться изображения.
+MEDIA_URL = '/media/'
+# Указываем папку, в которой будут храниться все медиафайлы.
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

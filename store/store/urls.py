@@ -16,6 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+# Импортируем модули необходимые для работы с изображениями.
+from django.conf.urls.static import static
+# Именно данным образом необходимо подключать модуль с настройками, так как таким способом подтягиваются все настройки
+# проекта. А если просто импортировать настройки из нашего проекта, то возьмутся только внешние настройки.
+from django.conf import settings
 
 from products.views import index, products
 
@@ -26,3 +31,7 @@ urlpatterns = [
     # Добавляем страницу с продуктами.
     path('products/', products, name='products'),
 ]
+
+# Чтобы изображения отображались локально делаем следующую проверку.
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
