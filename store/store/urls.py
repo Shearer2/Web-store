@@ -15,21 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 # Импортируем модули необходимые для работы с изображениями.
 from django.conf.urls.static import static
 # Именно данным образом необходимо подключать модуль с настройками, так как таким способом подтягиваются все настройки
 # проекта. А если просто импортировать настройки из нашего проекта, то возьмутся только внешние настройки.
 from django.conf import settings
 
-from products.views import index, products
+from products.views import index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Добавляем главную страницу, оставив пустые кавычки.
     path('', index, name='index'),
     # Добавляем страницу с продуктами.
-    path('products/', products, name='products'),
+    path('products/', include('products.urls', namespace='products')),
+    path('users/', include('users.urls', namespace='users')),
 ]
 
 # Чтобы изображения отображались локально делаем следующую проверку.
