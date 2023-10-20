@@ -42,10 +42,8 @@
                     urlpatterns-->
                     <a class="nav-link" href="{% url 'products:index' %}">Каталог <i class="fas fa-shopping-bag"></i> </a>
                 </li>
-                <li class="nav-item">
-                    <!--Добавляем ссылку на регистрацию пользователя.-->
-                    <a class="nav-link" href="{% url 'users:login' %}">Войти <i class="fas fa-sign-in-alt"></i></a>
-                </li>
+                <!--Если пользователь зашёл в свой аккаунт, то выводим его данный шаблон.-->
+                {% if user.is_authenticated %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
@@ -53,20 +51,36 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
-                            <a class="dropdown-item" href="users/profile.html">Профиль</a>
+                            <a class="dropdown-item" href="{% url 'users:profile' %}">Профиль</a>
                         </li>
                         <li><a class="dropdown-item" href="orders/orders.html">Заказы</a></li>
-                        <li><a class="dropdown-item" href="#">Админ-панель</a></li>
+                        <!--Если пользователь является супер пользователем или сотрудником, то мы показываем ему
+                        данную кнопку.-->
+                        {% if user.is_superuser or user.is_staff %}
+                        <li>
+                            <!--Делаем переход в админ-панель.-->
+                            <a class="dropdown-item" href="{% url 'admin:index' %}">
+                                Админ-панель
+                            </a>
+                        </li>
+                        {% endif %}
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <!--Добавляем возможность выхода из аккаунта.-->
+                            <a class="dropdown-item" href="{% url 'users:logout' %}">
                                 Выйти
                             </a>
                         </li>
                     </ul>
                 </li>
+                {% else %}
+                <li class="nav-item">
+                    <!--Добавляем ссылку на регистрацию пользователя.-->
+                    <a class="nav-link" href="{% url 'users:login' %}">Войти <i class="fas fa-sign-in-alt"></i></a>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>
