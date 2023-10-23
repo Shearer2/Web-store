@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 
 # Create your models here.
 # Модели это таблицы в базе данных.
@@ -44,3 +46,19 @@ class Product(models.Model):
     # Чтобы поменять отображение продуктов в админ панели необходимо переопределить магический метод str.
     def __str__(self):
         return f'Продукт: {self.name} | Категория: {self.category.name}'
+
+
+# Создаём таблицу с корзиной.
+class Basket(models.Model):
+    # Указываем пользователя, наследуясь от класса User.
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    # Указываем продукты, наследуясь от класса Product.
+    product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
+    # Указываем количество предметов, который пользователь решил купить.
+    quantity = models.PositiveSmallIntegerField(default=0)
+    # При помощи параметра auto_now_add новые переменные будут сами сохраняться.
+    created_timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Корзина для {self.user.email} | Продукт: {self.product.name}'
+

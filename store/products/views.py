@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
 
-from products.models import ProductCategory, Product
+from products.models import ProductCategory, Product, Basket
+from users.models import User
+
 
 
 # Create your views here.
@@ -31,3 +33,26 @@ def products(request):
         'categories': ProductCategory.objects.all(),
     }
     return render(request, 'products/products.html', context)
+
+
+# Контроллер обработчик событий для добавления товаров в корзину.
+def basket_add(request, product_id):
+    # Указываем id продукта, чтобы именно его положить в корзину.
+    product = Product.objects.get(id=product_id)
+    # Берём все элементы корзины пользователя и определённый продукт, так как если его нет, то мы добавим продукт,
+    # а если он есть, то увеличим количество товара на 1.
+    baskets = Basket.objects.filter(user=request.user, product=product)
+
+    # Если продукта нет в корзине, то добавляем его в корзину данному пользователю.
+    if not baskets.exists():
+        Basket.objects.create(user=request.user, product=product, quantity=1)
+    # Если продукт уже имеется в корзине, то берём его и увеличиваем количество на единицу.
+    else:
+        basket = baskets.first()
+        basket.quantity += 1
+        basket.save()
+
+    # После добавления товара в корзину необходимо возвращать пользователя на ту страницу, на которой он добавлял
+    # товар, но это может осуществляться как через каталог, так и через сам профиль.
+    # Делается данное перенаправление следующим образом.
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])

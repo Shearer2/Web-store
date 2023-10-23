@@ -6,6 +6,7 @@ from django.urls import reverse
 from users.models import User
 # Импортируем класс, чтобы присоединить форму к приложению.
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from products.models import Basket
 
 
 # Create your views here.
@@ -68,7 +69,13 @@ def profile(request):
     else:
         # Данные должны быть как при GET запросе, так и при POST запросе.
         form = UserProfileForm(instance=request.user)
-    context = {'title': 'Store - Профиль', 'form': form}
+    # Хоть шаблон корзины и находится в продуктах, но сама корзина подключается в профиле, поэтому чтобы значения в ней
+    # сделать динамичными необходимо подключить её в контроллере профиля.
+    context = {
+        'title': 'Store - Профиль',
+        'form': form,
+        'baskets': Basket.objects.all()
+    }
     return render(request, 'users/profile.html', context)
 
 
