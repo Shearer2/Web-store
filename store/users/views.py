@@ -57,7 +57,7 @@ def registration(request):
     return render(request, 'users/registration.html', context)
 
 
-# Контроллер для профиля.
+# Контроллер доступа для профиля.
 @login_required
 def profile(request):
     if request.method == 'POST':
