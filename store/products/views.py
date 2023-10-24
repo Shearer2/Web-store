@@ -1,8 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect
+# Подключаем модуль, который не будет обрабатывать контроллер, пока не будет произведена авторизация.
+from django.contrib.auth.decorators import login_required
 
 from products.models import ProductCategory, Product, Basket
 from users.models import User
-
 
 
 # Create your views here.
@@ -36,6 +37,8 @@ def products(request):
 
 
 # Контроллер обработчик событий для добавления товаров в корзину.
+# Подключаем декоратор доступа.
+@login_required
 def basket_add(request, product_id):
     # Указываем id продукта, чтобы именно его положить в корзину.
     product = Product.objects.get(id=product_id)
@@ -55,4 +58,12 @@ def basket_add(request, product_id):
     # После добавления товара в корзину необходимо возвращать пользователя на ту страницу, на которой он добавлял
     # товар, но это может осуществляться как через каталог, так и через сам профиль.
     # Делается данное перенаправление следующим образом.
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+# Контроллер для удаления товаров из корзины. Передаём id корзины.
+@login_required
+def basket_remove(request, basket_id):
+    basket = Basket.objects.get(id=basket_id)
+    basket.delete()
     return HttpResponseRedirect(request.META['HTTP_REFERER'])

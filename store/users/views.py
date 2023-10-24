@@ -2,6 +2,8 @@ from django.shortcuts import render, HttpResponseRedirect
 # Импортируем приложение auth, чтобы узнать существует ли пользователь.
 from django.contrib import auth, messages
 from django.urls import reverse
+# Подключаем модуль, который не будет обрабатывать контроллер, пока не будет произведена авторизация.
+from django.contrib.auth.decorators import login_required
 
 from users.models import User
 # Импортируем класс, чтобы присоединить форму к приложению.
@@ -56,6 +58,7 @@ def registration(request):
 
 
 # Контроллер для профиля.
+@login_required
 def profile(request):
     if request.method == 'POST':
         # Чтобы можно было изменять данные и сохранять их, необходимо указать не просто data, но и instance.
@@ -69,12 +72,15 @@ def profile(request):
     else:
         # Данные должны быть как при GET запросе, так и при POST запросе.
         form = UserProfileForm(instance=request.user)
+
     # Хоть шаблон корзины и находится в продуктах, но сама корзина подключается в профиле, поэтому чтобы значения в ней
     # сделать динамичными необходимо подключить её в контроллере профиля.
+    # Чтобы при добавлении другим пользователем товаров в корзину они не добавлялись всем пользователям необходимо
+    # сделать фильтрацию.
     context = {
         'title': 'Store - Профиль',
         'form': form,
-        'baskets': Basket.objects.all()
+        'baskets': Basket.objects.filter(user=request.user),
     }
     return render(request, 'users/profile.html', context)
 

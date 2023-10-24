@@ -48,6 +48,19 @@ class Product(models.Model):
         return f'Продукт: {self.name} | Категория: {self.category.name}'
 
 
+# Можно создать свой собственный QuerySet но с добавлением своих методов. Используем его для подсчёта суммы и
+# количества всех товаров.
+class BasketQuerySet(models.QuerySet):
+
+    # Метод для подсчёта общей суммы товаров.
+    def total_sum(self):
+        return sum(basket.sum() for basket in self.filter())
+
+    # Метод для подсчёта количества всех товаров.
+    def total_quantity(self):
+        return sum(basket.quantity for basket in self)
+
+
 # Создаём таблицу с корзиной.
 class Basket(models.Model):
     # Указываем пользователя, наследуясь от класса User.
@@ -59,6 +72,11 @@ class Basket(models.Model):
     # При помощи параметра auto_now_add новые переменные будут сами сохраняться.
     created_timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'Корзина для {self.user.email} | Продукт: {self.product.name}'
+    objects = BasketQuerySet.as_manager()
 
+    def __str__(self):
+        return f'Корзина для {self.user.username} | Продукт: {self.product.name}'
+
+    # Добавляем метод для подсчёта суммы товара.
+    def sum(self):
+        return self.product.price * self.quantity
