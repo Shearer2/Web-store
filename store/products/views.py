@@ -3,7 +3,8 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
 from products.models import ProductCategory, Product, Basket
-from users.models import User
+# Импортируем пагинатор для пагинации страниц.
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -25,13 +26,25 @@ def index(request):
 
 
 # Функция для отображения продуктов.
-def products(request):
+# category_id может и не передаваться, тогда для отображения всех товаров необходимо установить её в None.
+# page=1 делаем чтобы при перенаправлении пользователя на страницу с товарами отображалась первая страница.
+def products(request, category_id=None, page_number=1):
+    # Если передаётся category_id, то берём все продукты, которые относятся к данной категории.
+    # Можно передавать сразу category_id, но если нужно было бы сделать фильтрацию по названию, то необходимо
+    # использовать category__name.
+    # Иначе если не передаётся, то берём все объекты.
+    products = Product.objects.filter(category_id=category_id) if category_id else Product.objects.all()
+    per_page = 3
+    # Первым параметром передаётся список продуктов, а вторым сколько товаров нужно отображать на одной странице.
+    paginator = Paginator(products, per_page)
+    # В зависимости от выбранной страницы будут отображаться нужные товары.
+    products_paginator = paginator.page(page_number)
     # Добавляем в контекст данные из повторяющихся блоков в html, чтобы использовать теги в цикле.
     context = {
         'title': 'Store - Каталог',
         # Получаем список всех категорий.
-        'products': Product.objects.all(),
         'categories': ProductCategory.objects.all(),
+        'products': products_paginator,
     }
     return render(request, 'products/products.html', context)
 
