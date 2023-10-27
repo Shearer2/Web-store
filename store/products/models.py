@@ -33,7 +33,7 @@ class Product(models.Model):
     description = models.TextField()
     # Для работы с ценами используется тип данных DecimalField. max_digits - это максимальное количество цифр, которые
     # могут быть до запятой. decimal_places - это количество цифр после запятой.
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
     # Количество товаров на складе. Будем использовать PositiveIntegerField, так как у нас не может быть отрицательное
     # значение. По умолчанию используется 0 товаров на складе, передаём это в параметр default.
     quantity = models.PositiveIntegerField(default=0)
